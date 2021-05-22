@@ -1,8 +1,8 @@
 class Class
-  def cattr name = nil, value = nil, &block
+  def cattr name = nil, value = :_nil, &block
     return CattrProxy.new(self) unless name
 
-    if !value.nil? || block
+    if value != :_nil || block
       define_singleton_method(name) do |arg = :_nil|
         if arg == :_nil
           CattrProxy.new(self).send(name)
@@ -11,7 +11,7 @@ class Class
         end
       end
 
-      if !value.nil?
+      if value != :_nil
         CattrProxy.new(self).send('%s=' % name, value)
       elsif block
         CattrProxy.new(self).send(name, value, &block)

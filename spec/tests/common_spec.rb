@@ -11,7 +11,7 @@ class ClassA < Class0
   cattr.now { Time.now }
   cattr.rand { rand() }
 
-  cattr :helper, :all
+  cattr :helper, nil
   cattr(:weather) { :rainy }
 
   def get_foo
@@ -62,7 +62,7 @@ describe CattrProxy do
   end
 
   it 'creats class method' do
-    expect(ClassA.helper).to eq(:all)
+    expect(ClassA.helper).to eq(nil)
     expect(ClassB.helper).to eq(:use_it)
     expect(ClassA.weather).to eq(:rainy)
     expect(ClassB.weather).to eq(:cloudy)
