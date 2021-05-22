@@ -26,6 +26,7 @@ and to use
 class Foo
   # define :foo variable with nil value
   cattr :foo
+  cattr.foo = nil
 
   # define and set :foo class attributes
   cattr.foo = :bar
@@ -33,17 +34,25 @@ class Foo
   # get :foo class attributes
   cattr.foo 
 
-  # you can pass value as a block
+  # this will raise ArgumentError, class variable not defined
+  foo
+
+  # you can pass value as a proc
   cattr.now { Time.now }
 
-  # define class varaible by sending true
+  # define class varaible by sending default value as a second paramter or block
   cattr :helper, true
+  cattr(:weather) { :rainy }
 
   # set cattr.helper = :all
   helper :all
 
   # cattr.helper
   helper
+
+  # weather -> :rainy
+  weather :cloudy
+  # weather -> :cloudy
 
   def test
     # get :foo class attributes
