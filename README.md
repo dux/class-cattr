@@ -24,9 +24,10 @@ and to use
 
 ```ruby
 class Foo
-  include ClassCattr
+  # define :foo variable with nil value
+  cattr :foo
 
-  # set :foo class attributes
+  # define and set :foo class attributes
   cattr.foo = :bar
 
   # get :foo class attributes

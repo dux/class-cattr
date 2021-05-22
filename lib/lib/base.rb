@@ -1,19 +1,19 @@
-module ClassCattr
-  def self.included base
-    def base.cattr name=nil
-      if name
-        Proxy.new(self).send(name)
-      else
-        Proxy.new(self)
-      end
-    end
-  end
-
+class Class
   def cattr name=nil
     if name
-      Proxy.new(self.class).send(name)
+      CattrProxy.new(self).send('%s=' % name, nil)
     else
-      Proxy.new(self.class)
+      CattrProxy.new(self)
+    end
+  end
+end
+
+class Object
+  def cattr name=nil
+    if name
+      CattrProxy.new(self.class).send(name)
+    else
+      CattrProxy.new(self.class)
     end
   end
 end
