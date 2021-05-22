@@ -36,6 +36,15 @@ class Foo
   # you can pass value as a block
   cattr.now { Time.now }
 
+  # define class varaible by sending true
+  cattr :helper, true
+
+  # set cattr.helper = :all
+  helper :all
+
+  # cattr.helper
+  helper
+
   def test
     # get :foo class attributes
     cattr.foo

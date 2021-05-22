@@ -11,6 +11,10 @@ class ClassA < Class0
   cattr.now { Time.now }
   cattr.rand { rand() }
 
+  cattr :helper, true
+
+  helper :use_it
+
   def get_foo
     cattr.foo
   end
@@ -53,6 +57,10 @@ describe CattrProxy do
 
   it 'breaks on bad syntax' do
     expect { ClassB.cattr.test 123 }.to raise_error ArgumentError
+  end
+
+  it 'creats class method' do
+    expect(ClassB.cattr.helper).to eq(:use_it)
   end
 
   it 'breaks when accessing undefined variable' do
