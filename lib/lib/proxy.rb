@@ -18,9 +18,13 @@ class CattrProxy
 
         for el in @host.ancestors
           if el.respond_to?(:superclass) && el != Object && el.instance_variable_defined?(name)
-            value = el.instance_variable_get name
-            value = value.call if value === Proc
-            return value
+            local = el.instance_variable_get name
+
+            if local === Proc
+              local = @host.instance_exec &local
+            end
+
+            return local
           end
         end
 
