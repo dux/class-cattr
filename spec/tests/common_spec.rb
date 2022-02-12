@@ -71,4 +71,13 @@ describe CattrProxy do
   it 'breaks when accessing undefined variable' do
     expect { Class0.cattr.test }.to raise_error ArgumentError
   end
+
+  it 'can reset value' do
+    expect { ClassA.cattr.weather = 123 }.not_to raise_error
+    expect { ClassA.weather = 123 }.not_to raise_error
+  end
+
+  it 'cant reset value' do
+    expect { ClassA.foo = 123 }.to raise_error NoMethodError
+  end
 end

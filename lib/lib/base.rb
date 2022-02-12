@@ -3,6 +3,10 @@ class Class
     return CattrProxy.new(self) unless name
 
     if value != :_nil || block
+      define_singleton_method('%s=' % name) do |arg|
+        CattrProxy.new(self).send('%s=' % name, arg)
+      end
+
       define_singleton_method(name) do |arg = :_nil|
         if arg == :_nil
           CattrProxy.new(self).send(name)

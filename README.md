@@ -37,22 +37,29 @@ class Foo
   # this will raise ArgumentError, class variable not defined
   foo
 
-  # you can pass value as a proc
+  # you can pass default value as a proc as well
+  # on getter, value will be evalulated in runtime
   cattr.now { Time.now }
 
-  # define class varaible by sending default value as a second paramter or block
+  # if you want to define class attribute that can be accessed directly without cattr proxy
+  # define it by sending default value as a second paramter, or send a block
+  # creates Foo.cattr.helper and Foo.helper
   cattr :helper, true
+  # creates Foo.cattr.weather and Foo.weather
   cattr(:weather) { :rainy }
+  # creates only Foo.cattr.color and Foo.color is not created
+  cattr :color
 
   # set cattr.helper = :all
-  helper :all
+  helper = :all
 
-  # cattr.helper
+  # get/read cattr.helper -> :all
   helper
 
-  # weather -> :rainy
+  # you can ommit = when setting value
+  # weather if -> :rainy
   weather :cloudy
-  # weather -> :cloudy
+  # weather is now -> :cloudy
 
   def test
     # get :foo class attributes
@@ -71,6 +78,18 @@ Foo.cattr.foo # :bar
 Bar.cattr.foo # 123
 Bar.cattr.now # proc { Time.now }.call
 ```
+
+## Q&A
+
+* Q: Why did you create this when Rails provides `class_attribute` ?
+  <br>
+  A: There is a small but nimble Ruby community that uses Ruby and outside the Rails ekosystem. Yes they live.
+
+* Q: Why did you not use some and improve one of the existing similar libs?
+  <br>
+  A: I like clean interface without base class pollution, approach I did not find anywhre.
+  This gem only adds `cattr` methods to class and instance.
+  You can polute class methods if you want, but you cant pollute object instance methods.
 
 ## Dependency
 
