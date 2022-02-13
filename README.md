@@ -1,4 +1,4 @@
-# Class attributes
+# Ruby class attributes
 
 class-cattr gem provides simple way to set and get class attributes.
 
@@ -18,78 +18,91 @@ and to use
 
 ## How to use
 
-* include `ClassCattr`
-* define class attributes as `cattr.name = value`
-* get them via `cattr.name` (class and instance method provided)
+* require 'class-cattr'
+* define class attributes as `cattr :name, default: value, class: true|fase, instance: true|false`
+* get them via `cattr.name` (or via class and instance method if provided)
 
 ```ruby
-class Foo
-  # define :foo variable with nil value
-  cattr :foo
-  cattr.foo = nil
+class AppModel
+  # define :admin_path class attrbiute with class and instance methodss
+  cattr :admin_path,
+    # defaults value will be calculated on read, if proc provided
+    default: proc { '/admin/%s' % to_s.tableize },
+    
+    # create class setter and getter
+    class: true,
+    
+    # create instance setter and getter
+    instance: true
 
-  # define and set :foo class attributes
-  cattr.foo = :bar
-
-  # get :foo class attributes
-  cattr.foo 
-
-  # this will raise ArgumentError, class variable not defined
-  foo
-
-  # you can pass default value as a proc as well
-  # on getter, value will be evalulated in runtime
-  cattr.now { Time.now }
-
-  # if you want to define class attribute that can be accessed directly without cattr proxy
-  # define it by sending default value as a second paramter, or send a block
-  # creates Foo.cattr.helper and Foo.helper
-  cattr :helper, true
-  # creates Foo.cattr.weather and Foo.weather
-  cattr(:weather) { :rainy }
-  # creates only Foo.cattr.color and Foo.color is not created
-  cattr :color
-
-  # set cattr.helper = :all
-  helper = :all
-
-  # get/read cattr.helper -> :all
-  helper
-
-  # you can ommit = when setting value
-  # weather if -> :rainy
-  weather :cloudy
-  # weather is now -> :cloudy
-
-  def test
-    # get :foo class attributes
-    cattr.foo
-
-    # if value block is called in current scope in time of calling
-    cattr.now
-  end
+  # :icon, default value is nil
+  cattr :icon, 'undefined.png'
 end
 
-class Bar < Foo
-  cattr.foo = 123
+class User < AppModel
+  cattr.icon = 'user.png'
 end
 
-Foo.cattr.foo # :bar
-Bar.cattr.foo # 123
-Bar.cattr.now # proc { Time.now }.call
+class Product < AppModel
+end
+
+###
+
+User.cattr.admin_path  # '/admin/people'
+User.admin_path        # '/admin/people' 
+@user.cattr.admin_path # '/admin/people'
+@user.admin_path       # '/admin/people'
+
+User.cattr.icon        # 'user.png'
+User.icon              # NoMethodErorr
+@user.cattr.icon       # 'user.png'
+@user.icon             # NoMethodErorr
+
+Product.cattr.icon     # 'undefined.png'
+Product.icon           # NoMethodErorr
+@product.cattr.icon    # 'undefined.png'
+@product.icon          # NoMethodErorr
+```
+
+Tips
+
+```ruby
+class User
+  cattr :icon, 'undefined.png'
+  # can ve defined as
+  cattr.icon = 'undefined.png'
+  # but in this fashion you can't define class and instance setters and getters
+  
+  # this all all the same
+  catr.time_now = proc { Time.now }
+  catr(:time_now) { Time.now }
+  catr :time_now, default: proc { Time.now }
+
+  # you can define argument withut equal sign
+  self.admin_path 'foo'
+  # same as
+  self.admin_path = 'foo'
+end
+
+# it is advice to define cattr with
+cattr :name, opts
+
+# and use via
+Klass.cattr.name
+@klass.cattr.name
 ```
 
 ## Q&A
 
-* Q: Why did you create this when Rails provides `class_attribute` ?
-  <br>
-  A: There is a small but nimble Ruby community that uses Ruby and outside the Rails ekosystem. Yes they live.
+Q: Why did you create this when Rails provides `class_attribute` ?
+<br>
+A: There is a small but nimble Ruby community that uses Ruby and outside the Rails eco-system.
 
-* Q: Why did you not use some and improve one of the existing similar libs?
-  <br>
-  A: I like clean interface without base class pollution, approach I did not find anywhre.
-  This gem only adds `cattr` methods to class and instance.
-  You can polute class methods if you want, but you cant pollute object instance methods.
+Q: Why did you not use some and improve one of the existing similar libs?
+<br>
+A: I like clean interface without base class pollution, approach I did not find anywhre.
+This gem only adds `cattr` methods to class and instance.
+You can polute class methods if you want, but you cant pollute object instance methods.
 
 ## Dependency
 

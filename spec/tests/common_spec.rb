@@ -6,13 +6,17 @@ class Class0
 end
 
 class ClassA < Class0
-  cattr.foo = 123
+  cattr.simple_set = true
+  
+  cattr :foo, default: 123
   cattr :bar
-  cattr.now { Time.now }
-  cattr.rand { rand() }
+  cattr :now, default: proc { Time.now}, instance: true
+  cattr :rand, default: proc { rand() }
 
-  cattr :helper, nil
-  cattr(:weather) { :rainy }
+  cattr :inst, instance: true
+
+  cattr :helper, class: true
+  cattr :weather, default: proc { :rainy }, class: true
 
   def get_foo
     cattr.foo
@@ -27,9 +31,9 @@ class ClassB < ClassA
   cattr.foo = 456
   cattr.now = :bar
 
-  helper :use_it
-  weather :cloudy
-
+  self.helper = :use_it
+  self.weather = :cloudy
+  
   def get_foo
     cattr.foo
   end
@@ -79,5 +83,36 @@ describe CattrProxy do
 
   it 'cant reset value' do
     expect { ClassA.foo = 123 }.to raise_error NoMethodError
+  end
+
+  it 'sets instance method get' do
+    expect(ClassA.new.now.to_i).to eq(Time.now.to_i)
+    expect(ClassB.new.now).to eq(:bar)
+  end
+
+  it 'sets instance method set' do
+    ClassA.new.inst = :a
+    ClassB.new.inst = :b
+    expect(ClassA.new.inst).to eq(:a)
+    expect(ClassB.new.inst).to eq(:b)
+  end
+
+  it 'expects simple set to work' do
+    expect{ Class0.cattr.simple_set}.to raise_error(ArgumentError)
+    expect(ClassA.cattr.simple_set).to eq(true)
+    expect(ClassB.cattr.simple_set).to eq(true)
+  end
+
+  it 'captures invalid argument' do
+    expect{ ClassA.cattr(:bad, foo: true) }.to raise_error(ArgumentError)
+  end
+
+  it 'can set arg in class method' do
+    ClassA.cattr :arg_setter, class: true
+
+    value = 123
+    ClassA.arg_setter value
+    expect(ClassA.arg_setter).to eq(value)
+    expect(ClassA.cattr.arg_setter).to eq(value)
   end
 end
