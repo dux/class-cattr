@@ -48,10 +48,10 @@ end
 
 ###
 
-User.cattr.admin_path  # '/admin/people'
-User.admin_path        # '/admin/people' 
-@user.cattr.admin_path # '/admin/people'
-@user.admin_path       # '/admin/people'
+User.cattr.admin_path  # '/admin/people' (available allways)
+User.admin_path        # '/admin/people' (from class: true)
+@user.cattr.admin_path # '/admin/people' (available allways)
+@user.admin_path       # '/admin/people' (from instance: true)
 
 User.cattr.icon        # 'user.png'
 User.icon              # NoMethodErorr
@@ -102,7 +102,7 @@ Q: Why did you not use some and improve one of the existing similar libs?
 <br>
 A: I like clean interface without base class pollution, approach I did not find anywhre.
 This gem only adds `cattr` methods to class and instance.
-You can polute class methods if you want, but you cant pollute object instance methods.
+Optionaly, you can polute only class methods, you can pollute instance only methods, or both.
 
 ## Dependency
 
